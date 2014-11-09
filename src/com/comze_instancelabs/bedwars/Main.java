@@ -40,9 +40,12 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 
 public class Main extends JavaPlugin implements Listener {
 
-	// teams
-	// bed
+	// TODO
+	// teams: no team damage, team chat
 	// villager
+	// Bugs:
+	// - sometimes beds don't reset properly
+	// - when doing reload items don't get cleared
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -149,14 +152,21 @@ public class Main extends JavaPlugin implements Listener {
 					String displayname = event.getItemInHand().getItemMeta().getDisplayName();
 					if (displayname.startsWith("bwbeds:")) {
 						// bwbed:team#arena
-						int i = displayname.indexOf("#");
-						String arena = displayname.substring(i + 1);
-						String team = displayname.substring(displayname.indexOf(":") + 1, i);
+						int a = displayname.indexOf("#");
+						String arena = displayname.substring(a + 1);
+						String team = displayname.substring(displayname.indexOf(":") + 1, a);
 						System.out.println("#" + arena + " " + team);
-						System.out.println(event.getBlockAgainst().getLocation());
-						System.out.println(event.getBlock().getLocation());
 						Util.saveComponentForArena(this, arena, team + "_bed.loc1", event.getBlock().getLocation());
-						Util.saveComponentForArena(this, arena, team + "_bed.loc2", event.getBlockAgainst().getLocation());
+						for (int i = -3; i < 3; i++) {
+							for (int j = -3; j < 3; j++) {
+								Location l_ = event.getBlock().getLocation().clone().add(i, 0, j);
+								if (l_ != event.getBlock().getLocation()) {
+									if (l_.getBlock().getType() == Material.BED_BLOCK) {
+										Util.saveComponentForArena(this, arena, team + "_bed.loc2", l_);
+									}
+								}
+							}
+						}
 					}
 				}
 			}
@@ -305,25 +315,29 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				if (event.getBlock().getType() == Material.BED) {
+				System.out.println(event.getBlock().getType());
+				if (event.getBlock().getType() == Material.BED_BLOCK) {
 					String team = getTeambyBedLocation(a.getName(), event.getBlock().getLocation());
-					if (m.pteam.get(p.getName()) == team) {
+					System.out.println(team);
+					if (team == "-") {
+						event.setCancelled(true);
+						return;
+					}
+					if (m.pteam.get(p.getName()).equalsIgnoreCase(team)) {
 						// don't allow destroying own bed
 						event.setCancelled(true);
 						return;
 					}
-					if (team != "") {
-						if (team.equalsIgnoreCase("red")) {
-							a.red_bed = false;
-						} else if (team.equalsIgnoreCase("green")) {
-							a.green_bed = false;
-						} else if (team.equalsIgnoreCase("blue")) {
-							a.blue_bed = false;
-						} else if (team.equalsIgnoreCase("yellow")) {
-							a.yellow_bed = false;
-						}
-						return;
+					if (team.equalsIgnoreCase("red")) {
+						a.red_bed = false;
+					} else if (team.equalsIgnoreCase("green")) {
+						a.green_bed = false;
+					} else if (team.equalsIgnoreCase("blue")) {
+						a.blue_bed = false;
+					} else if (team.equalsIgnoreCase("yellow")) {
+						a.yellow_bed = false;
 					}
+					return;
 				}
 				if (event.getBlock().getType() != Material.SANDSTONE) {
 					event.setCancelled(true);
@@ -333,21 +347,22 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	public String getTeambyBedLocation(String arena, Location l) {
-		String ret = "";
+		String ret = "-";
 		HashMap<String, Location> temp = new HashMap<String, Location>();
-		temp.put("yellow", Util.getComponentForArena(this, arena, "yellow_bed.loc1"));
-		temp.put("yellow", Util.getComponentForArena(this, arena, "yellow_bed.loc2"));
-		temp.put("red", Util.getComponentForArena(this, arena, "red_bed.loc1"));
-		temp.put("red", Util.getComponentForArena(this, arena, "red_bed.loc2"));
-		temp.put("blue", Util.getComponentForArena(this, arena, "blue_bed.loc1"));
-		temp.put("blue", Util.getComponentForArena(this, arena, "blue_bed.loc2"));
-		temp.put("green", Util.getComponentForArena(this, arena, "green_bed.loc1"));
-		temp.put("green", Util.getComponentForArena(this, arena, "green_bed.loc2"));
+		temp.put("yellow_1", Util.getComponentForArena(this, arena, "yellow_bed.loc1"));
+		temp.put("yellow_2", Util.getComponentForArena(this, arena, "yellow_bed.loc2"));
+		temp.put("red_1", Util.getComponentForArena(this, arena, "red_bed.loc1"));
+		temp.put("red_2", Util.getComponentForArena(this, arena, "red_bed.loc2"));
+		temp.put("blue_1", Util.getComponentForArena(this, arena, "blue_bed.loc1"));
+		temp.put("blue_2", Util.getComponentForArena(this, arena, "blue_bed.loc2"));
+		temp.put("green_1", Util.getComponentForArena(this, arena, "green_bed.loc1"));
+		temp.put("green_2", Util.getComponentForArena(this, arena, "green_bed.loc2"));
 
 		for (String team : temp.keySet()) {
 			if (temp.get(team) != null) {
-				if (temp.get(team) == l) {
-					return team;
+				Location l_ = temp.get(team);
+				if (l.getBlockX() == l_.getBlockX() && l.getBlockY() == l_.getBlockY() && l.getBlockZ() == l_.getBlockZ()) {
+					return team.substring(0, team.indexOf("_"));
 				}
 			}
 		}
