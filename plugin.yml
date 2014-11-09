@@ -1,0 +1,12 @@
+name: MGBedWars
+main: com.comze_instancelabs.bedwars.Main
+version: 1.0
+author: InstanceLabs
+softdepend: [Vault, MinigamesLib]
+depend: [MinigamesLib]
+loadbefore: [MinigamesLib]
+commands:
+   bw:
+      description: Main command
+      usage: /bw [action]
+      aliases: [bedwars, mgbedwars]
