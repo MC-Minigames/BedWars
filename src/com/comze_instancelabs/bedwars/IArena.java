@@ -159,6 +159,14 @@ public class IArena extends Arena {
 		current_spawn_index_iron = 0;
 		current_spawn_index_gold = 0;
 		c = 0;
+		blue_bed = true;
+		red_bed = true;
+		green_bed = true;
+		yellow_bed = true;
+		blue = 0;
+		red = 0;
+		yellow = 0;
+		green = 0;
 		if (spawn_task != null) {
 			spawn_task.cancel();
 		}

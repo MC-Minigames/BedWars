@@ -41,10 +41,9 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// TODO
-	// teams: no team damage, team chat
+	// teams: team chat
 	// villager
 	// Bugs:
-	// - sometimes beds don't reset properly
 	// - when doing reload items don't get cleared
 
 	MinigamesAPI api = null;
