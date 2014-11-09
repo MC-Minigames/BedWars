@@ -157,10 +157,13 @@ public class Main extends JavaPlugin implements Listener {
 						String team = displayname.substring(displayname.indexOf(":") + 1, a);
 						System.out.println("#" + arena + " " + team);
 						Util.saveComponentForArena(this, arena, team + "_bed.loc1", event.getBlock().getLocation());
+						Location l = event.getBlock().getLocation();
 						for (int i = -3; i < 3; i++) {
 							for (int j = -3; j < 3; j++) {
-								Location l_ = event.getBlock().getLocation().clone().add(i, 0, j);
-								if (l_ != event.getBlock().getLocation()) {
+								Location l_ = l.clone().add(i, 0, j);
+								if (l.getBlockX() == l_.getBlockX() && l.getBlockY() == l_.getBlockY() && l.getBlockZ() == l_.getBlockZ()) {
+									// Skip
+								} else {
 									if (l_.getBlock().getType() == Material.BED_BLOCK) {
 										Util.saveComponentForArena(this, arena, team + "_bed.loc2", l_);
 									}
