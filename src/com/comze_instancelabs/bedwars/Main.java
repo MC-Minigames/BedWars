@@ -5,21 +5,26 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -42,7 +47,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	// TODO
 	// teams: team chat
-	// villager
+	// Item GUI
 	// Bugs:
 	// - when doing reload items don't get cleared
 
@@ -128,7 +133,7 @@ public class Main extends JavaPlugin implements Listener {
 
 					p.updateInventory();
 				} else {
-					// TODO send player command args
+					sender.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "]" + ChatColor.GRAY + " Usage: " + cmd.getName() + " setupbeds <arena> <team>");
 				}
 			}
 		}
@@ -176,10 +181,19 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onInteract(PlayerInteractEvent event) {
-		if (event.hasItem() && event.hasBlock()) {
-			if (event.getItem().getType() == Material.BED) {
+	public void onInteract(PlayerBedEnterEvent event) {
+		if (pli.global_players.containsKey(event.getPlayer().getName())) {
+			event.setCancelled(true);
+		}
+	}
 
+	@EventHandler
+	public void onEntityInteract(PlayerInteractEntityEvent event) {
+		final Player p = event.getPlayer();
+		if (pli.global_players.containsKey(p.getName())) {
+			if (event.getRightClicked().getType() == EntityType.VILLAGER) {
+				event.setCancelled(true);
+				// TODO open own GUI
 			}
 		}
 	}
@@ -292,6 +306,21 @@ public class Main extends JavaPlugin implements Listener {
 								event.setCancelled(true);
 							}
 						}
+					}
+				}
+			}
+		} else {
+			if (event.getDamager() instanceof Player) {
+				Player p = (Player) event.getDamager();
+				if (pli.global_players.containsKey(p.getName())) {
+					event.setCancelled(true);
+				}
+			} else if (event.getDamager() instanceof Arrow) {
+				Arrow ar = (Arrow) event.getDamager();
+				if (ar.getShooter() instanceof Player) {
+					Player p = (Player) ar.getShooter();
+					if (pli.global_players.containsKey(p.getName())) {
+						event.setCancelled(true);
 					}
 				}
 			}
