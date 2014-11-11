@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -399,6 +400,30 @@ public class Main extends JavaPlugin implements Listener {
 		}
 
 		return ret;
+	}
+
+	@EventHandler
+	public void onChat(AsyncPlayerChatEvent event) {
+		Player p = event.getPlayer();
+		if (pli.global_players.containsKey(p.getName())) {
+			if (!m.pteam.containsKey(p.getName())) {
+				return;
+			}
+			String team = m.pteam.get(p.getName());
+			String msg = String.format(ChatColor.GRAY + "[" + ChatColor.valueOf(team.toUpperCase()) + team + ChatColor.GRAY + "] " + event.getFormat(), p.getName(), event.getMessage());
+			for (Player receiver : event.getRecipients()) {
+				if (pli.global_players.containsKey(receiver.getName())) {
+					if (pli.global_players.get(receiver.getName()) == pli.global_players.get(p.getName())) {
+						if (m.pteam.containsKey(receiver.getName())) {
+							if (m.pteam.get(receiver.getName()).equalsIgnoreCase(team)) {
+								receiver.sendMessage(msg);
+							}
+						}
+					}
+				}
+			}
+			event.setCancelled(true);
+		}
 	}
 
 }
