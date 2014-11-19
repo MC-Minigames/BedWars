@@ -173,21 +173,22 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		boolean ret = cmdhandler.handleArgs(this, "mgbedwars", "/" + cmd.getName(), sender, args);
-		if (args[0].equalsIgnoreCase("setupbeds")) {
-			if (args.length > 1) {
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("setupbeds")) {
+				if (args.length > 1) {
+					// /bw setupbeds <arena>
+					if (sender instanceof Player) {
+						Player p = (Player) sender;
 
-				// /bw setupbeds <arena>
-				if (sender instanceof Player) {
-					Player p = (Player) sender;
+						p.getInventory().addItem(getSetupBed(args[1], "red"));
+						p.getInventory().addItem(getSetupBed(args[1], "blue"));
+						p.getInventory().addItem(getSetupBed(args[1], "green"));
+						p.getInventory().addItem(getSetupBed(args[1], "yellow"));
 
-					p.getInventory().addItem(getSetupBed(args[1], "red"));
-					p.getInventory().addItem(getSetupBed(args[1], "blue"));
-					p.getInventory().addItem(getSetupBed(args[1], "green"));
-					p.getInventory().addItem(getSetupBed(args[1], "yellow"));
-
-					p.updateInventory();
-				} else {
-					sender.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "]" + ChatColor.GRAY + " Usage: " + cmd.getName() + " setupbeds <arena> <team>");
+						p.updateInventory();
+					} else {
+						sender.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "]" + ChatColor.GRAY + " Usage: " + cmd.getName() + " setupbeds <arena> <team>");
+					}
 				}
 			}
 		}
@@ -300,40 +301,41 @@ public class Main extends JavaPlugin implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player p = (Player) event.getEntity();
 			if (pli.global_players.containsKey(p.getName())) {
 				IArena a = (IArena) pli.global_players.get(p.getName());
 				if (a.getArenaState() == ArenaState.INGAME) {
+					p.setHealth(20D);
 					event.getDrops().clear();
 					if (m.pteam.containsKey(p.getName())) {
 						String team = m.pteam.get(p.getName());
 						String playername = p.getName();
 						if (team == "red") {
 							if (a.red_bed) {
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, this.getName(), "spawns.spawn" + m.pteam.get(playername)));
+								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "blue") {
 							if (a.blue_bed) {
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, this.getName(), "spawns.spawn" + m.pteam.get(playername)));
+								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "green") {
 							if (a.green_bed) {
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, this.getName(), "spawns.spawn" + m.pteam.get(playername)));
+								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "yellow") {
 							if (a.yellow_bed) {
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, this.getName(), "spawns.spawn" + m.pteam.get(playername)));
+								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						}
 					}

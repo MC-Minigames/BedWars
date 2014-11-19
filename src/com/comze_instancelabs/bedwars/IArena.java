@@ -66,6 +66,10 @@ public class IArena extends Arena {
 		}
 	}
 
+	public void spectate(String playername, boolean super_) {
+		super.spectate(playername);
+	}
+
 	@Override
 	public void spectate(final String playername) {
 		try {
@@ -147,6 +151,10 @@ public class IArena extends Arena {
 				}
 			}
 		}, 20L, 20L);
+
+		for (String p_ : this.getAllPlayers()) {
+			Util.clearInv(Bukkit.getPlayer(p_));
+		}
 	}
 
 	@Override
