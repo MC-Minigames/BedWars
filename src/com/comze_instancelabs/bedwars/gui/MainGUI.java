@@ -81,23 +81,27 @@ public class MainGUI {
 		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
 			public void run() {
 				if (category.equalsIgnoreCase("blocks")) {
-					plugin.BlocksMerchant.openTrading(p);
+					if (plugin.BlocksMerchant.hasCustomer()) {
+						plugin.BlocksMerchant.clone().openTrading(p);
+					} else {
+						plugin.BlocksMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("armor")) {
-					plugin.ArmorMerchant.openTrading(p);
+					plugin.ArmorMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("pickaxes")) {
-					plugin.PickaxesMerchant.openTrading(p);
+					plugin.PickaxesMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("swords")) {
-					plugin.SwordsMerchant.openTrading(p);
+					plugin.SwordsMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("bows")) {
-					plugin.BowsMerchant.openTrading(p);
+					plugin.BowsMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("consumables")) {
-					plugin.ConsumablesMerchant.openTrading(p);
+					plugin.ConsumablesMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("chests")) {
-					plugin.ChestsMerchant.openTrading(p);
+					plugin.ChestsMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("potions")) {
-					plugin.PotionsMerchant.openTrading(p);
+					plugin.PotionsMerchant.clone().openTrading(p);
 				} else if (category.equalsIgnoreCase("specials")) {
-					plugin.SpecialsMerchant.openTrading(p);
+					plugin.SpecialsMerchant.clone().openTrading(p);
 				}
 			}
 		}, 2L);
