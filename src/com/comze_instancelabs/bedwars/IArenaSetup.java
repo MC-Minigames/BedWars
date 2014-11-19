@@ -70,6 +70,13 @@ public class IArenaSetup extends ArenaSetup {
 			e.printStackTrace();
 		}
 
+		// Remove all saved iron, gold and clay blocks for later refresh // TODO Test out
+		PluginInstance pli = MinigamesAPI.getAPI().getPluginInstance(plugin);
+		pli.getArenasConfig().getConfig().set("arenas." + arena + ".iron", null);
+		pli.getArenasConfig().getConfig().set("arenas." + arena + ".gold", null);
+		pli.getArenasConfig().getConfig().set("arenas." + arena + ".clay", null);
+		pli.getArenasConfig().saveConfig();
+
 		int tempid = 0;
 
 		for (int i = 0; i <= width; i++) {

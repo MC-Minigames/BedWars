@@ -17,7 +17,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -26,12 +25,14 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.comze_instancelabs.bedwars.gui.MainGUI;
+import com.comze_instancelabs.bedwars.villager.Merchant;
+import com.comze_instancelabs.bedwars.villager.MerchantOffer;
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
@@ -47,8 +48,7 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// TODO
-	// teams: team chat
-	// Item GUI
+	// Add global Chat
 	// Bugs:
 	// - when doing reload items don't get cleared
 
@@ -58,8 +58,21 @@ public class Main extends JavaPlugin implements Listener {
 	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
 	ICommandHandler cmdhandler = new ICommandHandler();
 
+	public MainGUI maingui;
+	public GUIConfig gui;
+
 	// Player -> Team
 	public static HashMap<String, String> pteam = new HashMap<String, String>();
+
+	public Merchant BlocksMerchant;
+	public Merchant ArmorMerchant;
+	public Merchant PickaxesMerchant;
+	public Merchant SwordsMerchant;
+	public Merchant BowsMerchant;
+	public Merchant ConsumablesMerchant;
+	public Merchant ChestsMerchant;
+	public Merchant PotionsMerchant;
+	public Merchant SpecialsMerchant;
 
 	public void onEnable() {
 		m = this;
@@ -80,6 +93,9 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		pli = pinstance;
 
+		gui = new GUIConfig(this);
+		maingui = new MainGUI(pli, this);
+
 		boolean continue_ = false;
 		for (Method m : pli.getArenaAchievements().getClass().getMethods()) {
 			if (m.getName().equalsIgnoreCase("addDefaultAchievement")) {
@@ -94,6 +110,43 @@ public class Main extends JavaPlugin implements Listener {
 			// pli.getArenaAchievements().addDefaultAchievement("win_game_with_one_life", "Win a game with one life left!", 200);
 			// pli.getAchievementsConfig().getConfig().options().copyDefaults(true);
 			// pli.getAchievementsConfig().saveConfig();
+		}
+
+		// load villager trades
+		BlocksMerchant = new Merchant("Blocks");
+		ArmorMerchant = new Merchant("Armor");
+		PickaxesMerchant = new Merchant("Pickaxes");
+		SwordsMerchant = new Merchant("Swords");
+		BowsMerchant = new Merchant("Bows");
+		ConsumablesMerchant = new Merchant("Consumables");
+		ChestsMerchant = new Merchant("Chests");
+		PotionsMerchant = new Merchant("Potions");
+		SpecialsMerchant = new Merchant("Specials");
+
+		FileConfiguration config = gui.getConfig();
+
+		loadTrades(config, "blocksgui.trades.", BlocksMerchant);
+		loadTrades(config, "armorgui.trades.", ArmorMerchant);
+		loadTrades(config, "pickaxesgui.trades.", PickaxesMerchant);
+		loadTrades(config, "swordsgui.trades.", SwordsMerchant);
+		loadTrades(config, "bowsgui.trades.", BowsMerchant);
+		loadTrades(config, "consumablesgui.trades.", ConsumablesMerchant);
+		loadTrades(config, "chestsgui.trades.", ChestsMerchant);
+		loadTrades(config, "potionsgui.trades.", PotionsMerchant);
+		loadTrades(config, "specialsgui.trades.", SpecialsMerchant);
+
+	}
+
+	public void loadTrades(FileConfiguration config, String path, Merchant m) {
+		if (config.isSet(path)) {
+			for (String aclass : config.getConfigurationSection(path).getKeys(false)) {
+				ArrayList<ItemStack> items = Util.parseItems(config.getString(path + aclass + ".items"));
+				if (items.size() > 2) {
+					m.addOffer(new MerchantOffer(items.get(1), items.get(2), items.get(0)));
+				} else {
+					m.addOffer(new MerchantOffer(items.get(1), items.get(0)));
+				}
+			}
 		}
 	}
 
@@ -193,8 +246,12 @@ public class Main extends JavaPlugin implements Listener {
 		final Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
 			if (event.getRightClicked().getType() == EntityType.VILLAGER) {
+				Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+					public void run() {
+						maingui.openGUI(p.getName());
+					}
+				}, 1L);
 				event.setCancelled(true);
-				// TODO open own GUI
 			}
 		}
 	}
@@ -334,7 +391,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				if (!(event.getBlock().getType() == Material.SANDSTONE)) {
+				if (event.getBlock().getType() != Material.SANDSTONE && event.getBlock().getType() != Material.GLOWSTONE && event.getBlock().getType() != Material.ENDER_STONE && event.getBlock().getType() != Material.GLASS) {
 					event.setCancelled(true);
 				}
 			}
