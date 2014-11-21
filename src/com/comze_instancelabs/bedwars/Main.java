@@ -49,7 +49,6 @@ public class Main extends JavaPlugin implements Listener {
 
 	// TODO
 	// Add tnt-sheep and gravi-bomb
-	// Add global Chat
 	// Bugs:
 	// - when doing reload items don't get cleared
 
@@ -476,6 +475,12 @@ public class Main extends JavaPlugin implements Listener {
 		Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
 			if (!m.pteam.containsKey(p.getName())) {
+				return;
+			}
+			if (event.getMessage().startsWith("@")) {
+				return;
+			} else if (event.getMessage().startsWith("all")) {
+				event.setMessage(event.getMessage().replace("all", ""));
 				return;
 			}
 			String team = m.pteam.get(p.getName());
