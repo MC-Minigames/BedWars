@@ -48,7 +48,9 @@ import com.comze_instancelabs.minigamesapi.util.Validator;
 public class Main extends JavaPlugin implements Listener {
 
 	// TODO
+	// Add tnt-sheep and gravi-bomb
 	// Add global Chat
+	// Add message when bed gets destroyed
 	// Bugs:
 	// - when doing reload items don't get cleared
 

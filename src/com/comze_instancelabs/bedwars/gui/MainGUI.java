@@ -31,11 +31,10 @@ public class MainGUI {
 
 	public void openGUI(final String p) {
 		IconMenu iconm;
-		int mincount = pli.getAClasses().keySet().size();
 		if (lasticonm.containsKey(p)) {
 			iconm = lasticonm.get(p);
 		} else {
-			iconm = new IconMenu(pli.getMessagesConfig().shop_item, (9 * plugin.getConfig().getInt("config.shop_gui_rows") > mincount - 1) ? 9 * plugin.getConfig().getInt("config.shop_gui_rows") : Math.round(mincount / 9) * 9 + 9, new IconMenu.OptionClickEventHandler() {
+			iconm = new IconMenu(pli.getMessagesConfig().shop_item, 27, new IconMenu.OptionClickEventHandler() {
 				@Override
 				public void onOptionClick(IconMenu.OptionClickEvent event) {
 					if (event.getPlayer().getName().equalsIgnoreCase(p)) {
@@ -50,9 +49,16 @@ public class MainGUI {
 					event.setWillClose(true);
 				}
 			}, plugin);
+
+			for (int i = 0; i < 9; i++) {
+				iconm.setOption(i, new ItemStack(Material.STAINED_GLASS_PANE), "", "");
+			}
+			for (int i = 18; i < 27; i++) {
+				iconm.setOption(i, new ItemStack(Material.STAINED_GLASS_PANE), "", "");
+			}
 		}
 
-		int c = 0;
+		int c = 9;
 		for (String ac : category_items.keySet()) {
 			// TODO Category.java with lore and displayname
 			iconm.setOption(c, category_items.get(ac), ac, ac);

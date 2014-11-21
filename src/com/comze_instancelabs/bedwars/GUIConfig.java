@@ -64,6 +64,18 @@ public class GUIConfig {
 		this.getConfig().addDefault("chestsgui.trades.trade1.items", "54*1;265*1");
 		this.getConfig().addDefault("chestsgui.trades.trade2.items", "130*1;266*1");
 
+		this.getConfig().addDefault("potionsgui.trades.trade1.items", "373:16341*1;265*3");
+		this.getConfig().addDefault("potionsgui.trades.trade2.items", "373:16373*1;265*5");
+		this.getConfig().addDefault("potionsgui.trades.trade3.items", "373:16274*1;265*7");
+		this.getConfig().addDefault("potionsgui.trades.trade4.items", "373:16281*1;266*7");
+
+		this.getConfig().addDefault("specialsgui.trades.trade1.items", "65*1;336*1");
+		this.getConfig().addDefault("specialsgui.trades.trade2.items", "30*1;336*16");
+		this.getConfig().addDefault("specialsgui.trades.trade3.items", "346*1;265*6");
+		this.getConfig().addDefault("specialsgui.trades.trade4.items", "259*1;265*7");
+		this.getConfig().addDefault("specialsgui.trades.trade5.items", "46*1;266*3");
+		this.getConfig().addDefault("specialsgui.trades.trade6.items", "368*1;266*13");
+
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();
 	}
