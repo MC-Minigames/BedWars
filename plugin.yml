@@ -1,6 +1,6 @@
 name: MGBedWars
 main: com.comze_instancelabs.bedwars.Main
-version: 1.0
+version: 1.0.0
 author: InstanceLabs
 softdepend: [Vault, MinigamesLib]
 depend: [MinigamesLib]

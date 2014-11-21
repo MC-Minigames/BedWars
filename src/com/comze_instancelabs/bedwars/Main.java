@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
@@ -39,12 +40,14 @@ import com.comze_instancelabs.bedwars.villager.MerchantOffer;
 import com.comze_instancelabs.minigamesapi.Arena;
 import com.comze_instancelabs.minigamesapi.ArenaSetup;
 import com.comze_instancelabs.minigamesapi.ArenaState;
+import com.comze_instancelabs.minigamesapi.ArenaType;
 import com.comze_instancelabs.minigamesapi.MinigamesAPI;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.config.ArenasConfig;
 import com.comze_instancelabs.minigamesapi.config.DefaultConfig;
 import com.comze_instancelabs.minigamesapi.config.MessagesConfig;
 import com.comze_instancelabs.minigamesapi.config.StatsConfig;
+import com.comze_instancelabs.minigamesapi.util.Cuboid;
 import com.comze_instancelabs.minigamesapi.util.Util;
 import com.comze_instancelabs.minigamesapi.util.Validator;
 
@@ -407,6 +410,22 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
+	public void onItemSpawn(ItemSpawnEvent event) {
+		for (Arena a : pli.getArenas()) {
+			if (Validator.isArenaValid(this, a) && a.getArenaType() == ArenaType.REGENERATION) {
+				Cuboid c = a.getBoundaries();
+				if (c != null && a.getArenaState() == ArenaState.INGAME) {
+					if (c.containsLocWithoutY(event.getEntity().getLocation())) {
+						if (event.getEntity().getItemStack().getType() == Material.BED) {
+							event.setCancelled(true);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
 		final Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
@@ -434,6 +453,11 @@ public class Main extends JavaPlugin implements Listener {
 					} else {
 						return;
 					}
+					a.getSmartReset().addChanged(event.getBlock(), event.getBlock().getType().equals(Material.CHEST));
+					a.getSmartReset().addChanged(event.getBlock().getLocation().clone().add(1D, 0D, 0D).getBlock(), event.getBlock().getLocation().clone().add(1D, 0D, 1D).getBlock().getType().equals(Material.CHEST));
+					a.getSmartReset().addChanged(event.getBlock().getLocation().clone().add(-1D, 0D, 0D).getBlock(), event.getBlock().getLocation().clone().add(1D, 0D, -1D).getBlock().getType().equals(Material.CHEST));
+					a.getSmartReset().addChanged(event.getBlock().getLocation().clone().add(0D, 0D, 1D).getBlock(), event.getBlock().getLocation().clone().add(-1D, 0D, 1D).getBlock().getType().equals(Material.CHEST));
+					a.getSmartReset().addChanged(event.getBlock().getLocation().clone().add(0D, 0D, -1D).getBlock(), event.getBlock().getLocation().clone().add(-1D, 0D, -1D).getBlock().getType().equals(Material.CHEST));
 					event.getBlock().setType(Material.AIR);
 					for (String p_ : a.getAllPlayers()) {
 						if (Validator.isPlayerOnline(p_)) {
@@ -509,7 +533,6 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			for (Entity e : p.getLocation().getChunk().getEntities()) {
 				if (e.getType() == EntityType.VILLAGER) {
-					System.out.println(e.getType());
 					Villager v = (Villager) e;
 					v.setVelocity(new Vector(0F, 0.1F, 0F));
 				}

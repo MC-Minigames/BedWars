@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -38,6 +39,9 @@ public class IArena extends Arena {
 	public ArrayList<Location> gold_locs = new ArrayList<Location>();
 	public ArrayList<Location> iron_locs = new ArrayList<Location>();
 
+	public ArrayList<Item> dropped_items = new ArrayList<Item>();
+
+	
 	public IArena(Main m, String arena_id) {
 		super(m, arena_id, ArenaType.REGENERATION);
 		this.m = m;
@@ -135,7 +139,7 @@ public class IArena extends Arena {
 				if (current_spawn_index_iron > 10) {
 					for (Location l : iron_locs) {
 						if (l != null) {
-							l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.IRON_INGOT));
+							dropped_items.add(l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.IRON_INGOT)));
 						}
 					}
 					current_spawn_index_iron = 0;
@@ -143,14 +147,14 @@ public class IArena extends Arena {
 				if (current_spawn_index_gold > 30) {
 					for (Location l : gold_locs) {
 						if (l != null) {
-							l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.GOLD_INGOT));
+							dropped_items.add(l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.GOLD_INGOT)));
 						}
 					}
 					current_spawn_index_gold = 0;
 				}
 				for (Location l : clay_locs) {
 					if (l != null) {
-						l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.CLAY_BRICK));
+						dropped_items.add(l.getWorld().dropItemNaturally(l.clone().add(0D, 1D, 0D), new ItemStack(Material.CLAY_BRICK)));
 					}
 				}
 			}
@@ -181,6 +185,11 @@ public class IArena extends Arena {
 		green = 0;
 		if (spawn_task != null) {
 			spawn_task.cancel();
+		}
+		for(Item i : dropped_items){
+			if(i != null){
+				i.remove();
+			}
 		}
 		super.stop();
 	}
