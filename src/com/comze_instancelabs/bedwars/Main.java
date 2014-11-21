@@ -12,23 +12,26 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockMultiPlaceEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.bedwars.gui.MainGUI;
 import com.comze_instancelabs.bedwars.villager.Merchant;
@@ -497,6 +500,26 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onTeleport(PlayerTeleportEvent event) {
+		final Player p = event.getPlayer();
+		if (pli.global_players.containsKey(p.getName())) {
+			for (Entity e : p.getLocation().getChunk().getEntities()) {
+				if (e.getType() == EntityType.VILLAGER) {
+					System.out.println(e.getType());
+					Villager v = (Villager) e;
+					v.setVelocity(new Vector(0F, 0.1F, 0F));
+				}
+			}
+			Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+				public void run() {
+					p.getLocation().getChunk().unload(true, false);
+					p.getLocation().getChunk().load();
+				}
+			}, 10L);
 		}
 	}
 
