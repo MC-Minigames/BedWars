@@ -93,21 +93,53 @@ public class MainGUI {
 						plugin.BlocksMerchant.openTrading(p);
 					}
 				} else if (category.equalsIgnoreCase("armor")) {
-					plugin.ArmorMerchant.clone().openTrading(p);
+					if (plugin.ArmorMerchant.hasCustomer()) {
+						plugin.ArmorMerchant.clone().openTrading(p);
+					} else {
+						plugin.ArmorMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("pickaxes")) {
-					plugin.PickaxesMerchant.clone().openTrading(p);
+					if (plugin.PickaxesMerchant.hasCustomer()) {
+						plugin.PickaxesMerchant.clone().openTrading(p);
+					} else {
+						plugin.PickaxesMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("swords")) {
-					plugin.SwordsMerchant.clone().openTrading(p);
+					if (plugin.SwordsMerchant.hasCustomer()) {
+						plugin.SwordsMerchant.clone().openTrading(p);
+					} else {
+						plugin.SwordsMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("bows")) {
-					plugin.BowsMerchant.clone().openTrading(p);
+					if (plugin.BowsMerchant.hasCustomer()) {
+						plugin.BowsMerchant.clone().openTrading(p);
+					} else {
+						plugin.BowsMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("consumables")) {
-					plugin.ConsumablesMerchant.clone().openTrading(p);
+					if (plugin.ConsumablesMerchant.hasCustomer()) {
+						plugin.ConsumablesMerchant.clone().openTrading(p);
+					} else {
+						plugin.ConsumablesMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("chests")) {
-					plugin.ChestsMerchant.clone().openTrading(p);
+					if (plugin.ChestsMerchant.hasCustomer()) {
+						plugin.ChestsMerchant.clone().openTrading(p);
+					} else {
+						plugin.ChestsMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("potions")) {
-					plugin.PotionsMerchant.clone().openTrading(p);
+					if (plugin.PotionsMerchant.hasCustomer()) {
+						plugin.PotionsMerchant.clone().openTrading(p);
+					} else {
+						plugin.PotionsMerchant.openTrading(p);
+					}
 				} else if (category.equalsIgnoreCase("specials")) {
-					plugin.SpecialsMerchant.clone().openTrading(p);
+					if (plugin.SpecialsMerchant.hasCustomer()) {
+						plugin.SpecialsMerchant.clone().openTrading(p);
+					} else {
+						plugin.SpecialsMerchant.openTrading(p);
+					}
 				}
 			}
 		}, 2L);

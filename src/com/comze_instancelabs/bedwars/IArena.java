@@ -49,15 +49,19 @@ public class IArena extends Arena {
 		if (c == 0) {
 			m.pteam.put(playername, "red");
 			Bukkit.getPlayer(playername).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "RED Team");
+			red++;
 		} else if (c == 1) {
 			m.pteam.put(playername, "green");
 			Bukkit.getPlayer(playername).sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "GREEN Team");
+			green++;
 		} else if (c == 2) {
 			m.pteam.put(playername, "blue");
 			Bukkit.getPlayer(playername).sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "BLUE Team");
+			blue++;
 		} else if (c == 3) {
 			m.pteam.put(playername, "yellow");
 			Bukkit.getPlayer(playername).sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YELLOW Team");
+			yellow++;
 		}
 		if (c < 3) {
 			c++;

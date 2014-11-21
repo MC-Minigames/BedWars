@@ -50,7 +50,6 @@ public class Main extends JavaPlugin implements Listener {
 	// TODO
 	// Add tnt-sheep and gravi-bomb
 	// Add global Chat
-	// Add message when bed gets destroyed
 	// Bugs:
 	// - when doing reload items don't get cleared
 
@@ -137,6 +136,10 @@ public class Main extends JavaPlugin implements Listener {
 		loadTrades(config, "potionsgui.trades.", PotionsMerchant);
 		loadTrades(config, "specialsgui.trades.", SpecialsMerchant);
 
+		// Bed message
+		pli.getMessagesConfig().getConfig().addDefault("messages.bed_destroyed", "&cTeam &4<team>&c's bed was destroyed!");
+		pli.getMessagesConfig().getConfig().options().copyDefaults(true);
+		pli.getMessagesConfig().saveConfig();
 	}
 
 	public void loadTrades(FileConfiguration config, String path, Merchant m) {
@@ -320,24 +323,28 @@ public class Main extends JavaPlugin implements Listener {
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
+								a.red--;
 							}
 						} else if (team == "blue") {
 							if (a.blue_bed) {
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
+								a.blue--;
 							}
 						} else if (team == "green") {
 							if (a.green_bed) {
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
+								a.green--;
 							}
 						} else if (team == "yellow") {
 							if (a.yellow_bed) {
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
+								a.yellow--;
 							}
 						}
 					}
@@ -429,6 +436,13 @@ public class Main extends JavaPlugin implements Listener {
 						a.blue_bed = false;
 					} else if (team.equalsIgnoreCase("yellow")) {
 						a.yellow_bed = false;
+					} else {
+						return;
+					}
+					for (String p_ : a.getAllPlayers()) {
+						if (Validator.isPlayerOnline(p_)) {
+							Bukkit.getPlayer(p_).sendMessage(ChatColor.translateAlternateColorCodes('&', pli.getMessagesConfig().getConfig().getString("messages.bed_destroyed").replaceAll("<team>", team)));
+						}
 					}
 					return;
 				}
