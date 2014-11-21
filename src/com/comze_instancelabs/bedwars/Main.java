@@ -276,24 +276,28 @@ public class Main extends JavaPlugin implements Listener {
 						Util.clearInv(p);
 						if (team == "red") {
 							if (a.red_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName());
 							}
 						} else if (team == "blue") {
 							if (a.blue_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName());
 							}
 						} else if (team == "green") {
 							if (a.green_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName());
 							}
 						} else if (team == "yellow") {
 							if (a.yellow_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName());
@@ -320,6 +324,7 @@ public class Main extends JavaPlugin implements Listener {
 						String playername = p.getName();
 						if (team == "red") {
 							if (a.red_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
@@ -327,6 +332,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						} else if (team == "blue") {
 							if (a.blue_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
@@ -334,6 +340,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						} else if (team == "green") {
 							if (a.green_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
@@ -341,6 +348,7 @@ public class Main extends JavaPlugin implements Listener {
 							}
 						} else if (team == "yellow") {
 							if (a.yellow_bed) {
+								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
@@ -397,28 +405,13 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onPlace(BlockPlaceEvent event) {
-		final Player p = event.getPlayer();
-		if (pli.global_players.containsKey(p.getName())) {
-			IArena a = (IArena) pli.global_players.get(p.getName());
-			if (a.getArenaState() == ArenaState.INGAME) {
-				if (event.getBlock().getType() != Material.SANDSTONE && event.getBlock().getType() != Material.GLOWSTONE && event.getBlock().getType() != Material.ENDER_STONE && event.getBlock().getType() != Material.GLASS) {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}
-
-	@EventHandler
 	public void onBreak(BlockBreakEvent event) {
 		final Player p = event.getPlayer();
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-				System.out.println(event.getBlock().getType());
 				if (event.getBlock().getType() == Material.BED_BLOCK) {
 					String team = getTeambyBedLocation(a.getName(), event.getBlock().getLocation());
-					System.out.println(team);
 					if (team == "-") {
 						event.setCancelled(true);
 						return;
@@ -439,6 +432,7 @@ public class Main extends JavaPlugin implements Listener {
 					} else {
 						return;
 					}
+					event.getBlock().setType(Material.AIR);
 					for (String p_ : a.getAllPlayers()) {
 						if (Validator.isPlayerOnline(p_)) {
 							Bukkit.getPlayer(p_).sendMessage(ChatColor.translateAlternateColorCodes('&', pli.getMessagesConfig().getConfig().getString("messages.bed_destroyed").replaceAll("<team>", team)));
@@ -446,7 +440,7 @@ public class Main extends JavaPlugin implements Listener {
 					}
 					return;
 				}
-				if (event.getBlock().getType() != Material.SANDSTONE) {
+				if (event.getBlock().getType() != Material.IRON_BLOCK && event.getBlock().getType() != Material.ENDER_CHEST && event.getBlock().getType() != Material.TNT && event.getBlock().getType() != Material.SANDSTONE && event.getBlock().getType() != Material.GLOWSTONE && event.getBlock().getType() != Material.ENDER_STONE && event.getBlock().getType() != Material.GLASS && event.getBlock().getType() != Material.LADDER && event.getBlock().getType() != Material.CHEST) {
 					event.setCancelled(true);
 				}
 			}
