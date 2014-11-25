@@ -284,28 +284,28 @@ public class Main extends JavaPlugin implements Listener {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "blue") {
 							if (a.blue_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "green") {
 							if (a.green_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						} else if (team == "yellow") {
 							if (a.yellow_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
-								a.spectate(p.getName());
+								a.spectate(p.getName(), true);
 							}
 						}
 						scoreboard.updateScoreboard(a);
