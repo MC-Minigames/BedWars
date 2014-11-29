@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -41,31 +42,78 @@ public class IArena extends Arena {
 
 	public ArrayList<Item> dropped_items = new ArrayList<Item>();
 
-	
 	public IArena(Main m, String arena_id) {
 		super(m, arena_id, ArenaType.REGENERATION);
 		this.m = m;
 	}
 
 	@Override
-	public void joinPlayerLobby(String playername) {
+	public void joinPlayerLobby(final String playername) {
+		Bukkit.getScheduler().runTaskLater(m, new Runnable() {
+			public void run() {
+				Player p = Bukkit.getPlayer(playername);
+				if (p != null) {
+					if (m.pli.global_players.containsKey(p.getName())) {
+						ItemStack teamselector = new ItemStack(Material.WOOL, 1, (byte) 14);
+						ItemMeta itemm = teamselector.getItemMeta();
+						itemm.setDisplayName(ChatColor.RED + "Team");
+						teamselector.setItemMeta(itemm);
+						p.getInventory().setItem(0, teamselector);
+						p.updateInventory();
+					}
+				}
+			}
+		}, 30L);
 		super.joinPlayerLobby(playername);
+		selectTeam(playername);
+
+	}
+
+	int tries_temp = 0;
+
+	public void selectTeam(String playername) {
 		if (c == 0) {
-			m.pteam.put(playername, "red");
-			Bukkit.getPlayer(playername).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "RED Team");
-			red++;
+			if (Util.isComponentForArenaValid(m, this.getName(), "spawns.spawnred")) {
+				m.pteam.put(playername, "red");
+				Bukkit.getPlayer(playername).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "RED Team");
+				red++;
+			} else {
+				c++;
+				selectTeam(playername);
+			}
+
 		} else if (c == 1) {
-			m.pteam.put(playername, "green");
-			Bukkit.getPlayer(playername).sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "GREEN Team");
-			green++;
+			if (Util.isComponentForArenaValid(m, this.getName(), "spawns.spawngreen")) {
+				m.pteam.put(playername, "green");
+				Bukkit.getPlayer(playername).sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "GREEN Team");
+				green++;
+			} else {
+				c++;
+				selectTeam(playername);
+			}
 		} else if (c == 2) {
-			m.pteam.put(playername, "blue");
-			Bukkit.getPlayer(playername).sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "BLUE Team");
-			blue++;
+			if (Util.isComponentForArenaValid(m, this.getName(), "spawns.spawnblue")) {
+				m.pteam.put(playername, "blue");
+				Bukkit.getPlayer(playername).sendMessage(ChatColor.BLUE + "" + ChatColor.BOLD + "BLUE Team");
+				blue++;
+			} else {
+				c++;
+				selectTeam(playername);
+			}
 		} else if (c == 3) {
-			m.pteam.put(playername, "yellow");
-			Bukkit.getPlayer(playername).sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YELLOW Team");
-			yellow++;
+			if (Util.isComponentForArenaValid(m, this.getName(), "spawns.spawnyellow")) {
+				m.pteam.put(playername, "yellow");
+				Bukkit.getPlayer(playername).sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YELLOW Team");
+				yellow++;
+			} else {
+				tries_temp++;
+				if (tries_temp > 100) {
+					return;
+				}
+				// TODO Infinite loop here, if no spawns set?
+				selectTeam(playername);
+			}
+			c = 0;
 		}
 		if (c < 3) {
 			c++;
@@ -167,11 +215,24 @@ public class IArena extends Arena {
 
 	@Override
 	public void leavePlayer(String p_, boolean arg1, boolean arg2) {
+		if (m.pteam.containsKey(p_)) {
+			String team = m.pteam.get(p_);
+			if (team.equalsIgnoreCase("red")) {
+				red--;
+			} else if (team.equalsIgnoreCase("blue")) {
+				blue--;
+			} else if (team.equalsIgnoreCase("green")) {
+				green--;
+			} else if (team.equalsIgnoreCase("yellow")) {
+				yellow--;
+			}
+		}
 		super.leavePlayer(p_, arg1, arg2);
 	}
 
 	@Override
 	public void stop() {
+		tries_temp = 0;
 		current_spawn_index_iron = 0;
 		current_spawn_index_gold = 0;
 		c = 0;
@@ -186,8 +247,8 @@ public class IArena extends Arena {
 		if (spawn_task != null) {
 			spawn_task.cancel();
 		}
-		for(Item i : dropped_items){
-			if(i != null){
+		for (Item i : dropped_items) {
+			if (i != null) {
 				i.remove();
 			}
 		}

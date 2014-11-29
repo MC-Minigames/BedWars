@@ -27,6 +27,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
@@ -35,6 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.bedwars.gui.MainGUI;
+import com.comze_instancelabs.bedwars.gui.TeamSelectorGUI;
 import com.comze_instancelabs.bedwars.villager.Merchant;
 import com.comze_instancelabs.bedwars.villager.MerchantOffer;
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -65,6 +67,7 @@ public class Main extends JavaPlugin implements Listener {
 	ICommandHandler cmdhandler = new ICommandHandler();
 
 	public MainGUI maingui;
+	public TeamSelectorGUI teamgui;
 	public GUIConfig gui;
 
 	// Player -> Team
@@ -101,6 +104,7 @@ public class Main extends JavaPlugin implements Listener {
 
 		gui = new GUIConfig(this);
 		maingui = new MainGUI(pli, this);
+		teamgui = new TeamSelectorGUI(pli, this);
 
 		boolean continue_ = false;
 		for (Method m : pli.getArenaAchievements().getClass().getMethods()) {
@@ -263,6 +267,20 @@ public class Main extends JavaPlugin implements Listener {
 					}
 				}, 1L);
 				event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onInteract(PlayerInteractEvent event) {
+		if (event.hasItem()) {
+			if (event.getItem().getType() == Material.WOOL) {
+				if (pli.global_players.containsKey(event.getPlayer().getName())) {
+					Arena a = pli.global_players.get(event.getPlayer().getName());
+					if (a.getArenaState() != ArenaState.INGAME && !a.isArcadeMain()) {
+						teamgui.openGUI(event.getPlayer().getName());
+					}
+				}
 			}
 		}
 	}
@@ -461,7 +479,7 @@ public class Main extends JavaPlugin implements Listener {
 					event.getBlock().setType(Material.AIR);
 					for (String p_ : a.getAllPlayers()) {
 						if (Validator.isPlayerOnline(p_)) {
-							Bukkit.getPlayer(p_).sendMessage(ChatColor.translateAlternateColorCodes('&', pli.getMessagesConfig().getConfig().getString("messages.bed_destroyed").replaceAll("<team>", team)));
+							Bukkit.getPlayer(p_).sendMessage(ChatColor.translateAlternateColorCodes('&', pli.getMessagesConfig().getConfig().getString("messages.bed_destroyed").replaceAll("<team>", Character.toUpperCase(team.charAt(0)) + team.substring(1))));
 						}
 					}
 					return;
