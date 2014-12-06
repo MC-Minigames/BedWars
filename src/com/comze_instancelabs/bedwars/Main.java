@@ -277,7 +277,7 @@ public class Main extends JavaPlugin implements Listener {
 			if (event.getItem().getType() == Material.WOOL) {
 				if (pli.global_players.containsKey(event.getPlayer().getName())) {
 					Arena a = pli.global_players.get(event.getPlayer().getName());
-					if (a.getArenaState() != ArenaState.INGAME && !a.isArcadeMain()) {
+					if (a.getArenaState() != ArenaState.INGAME && !a.isArcadeMain() && !a.getIngameCountdownStarted()) {
 						teamgui.openGUI(event.getPlayer().getName());
 					}
 				}
@@ -297,28 +297,28 @@ public class Main extends JavaPlugin implements Listener {
 						String team = m.pteam.get(p.getName());
 						String playername = p.getName();
 						Util.clearInv(p);
-						if (team == "red") {
+						if (team.equalsIgnoreCase("red")) {
 							if (a.red_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
 							}
-						} else if (team == "blue") {
+						} else if (team.equalsIgnoreCase("blue")) {
 							if (a.blue_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
 							}
-						} else if (team == "green") {
+						} else if (team.equalsIgnoreCase("green")) {
 							if (a.green_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
 							} else {
 								a.spectate(p.getName(), true);
 							}
-						} else if (team == "yellow") {
+						} else if (team.equalsIgnoreCase("yellow")) {
 							if (a.yellow_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
@@ -345,7 +345,7 @@ public class Main extends JavaPlugin implements Listener {
 					if (m.pteam.containsKey(p.getName())) {
 						String team = m.pteam.get(p.getName());
 						String playername = p.getName();
-						if (team == "red") {
+						if (team.equalsIgnoreCase("red")) {
 							if (a.red_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
@@ -353,7 +353,7 @@ public class Main extends JavaPlugin implements Listener {
 								a.spectate(p.getName(), true);
 								a.red--;
 							}
-						} else if (team == "blue") {
+						} else if (team.equalsIgnoreCase("blue")) {
 							if (a.blue_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
@@ -361,7 +361,7 @@ public class Main extends JavaPlugin implements Listener {
 								a.spectate(p.getName(), true);
 								a.blue--;
 							}
-						} else if (team == "green") {
+						} else if (team.equalsIgnoreCase("green")) {
 							if (a.green_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
@@ -369,7 +369,7 @@ public class Main extends JavaPlugin implements Listener {
 								a.spectate(p.getName(), true);
 								a.green--;
 							}
-						} else if (team == "yellow") {
+						} else if (team.equalsIgnoreCase("yellow")) {
 							if (a.yellow_bed) {
 								a.onEliminated(playername);
 								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
