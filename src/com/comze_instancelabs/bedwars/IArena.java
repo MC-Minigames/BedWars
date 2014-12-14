@@ -22,10 +22,10 @@ public class IArena extends Arena {
 
 	public Main m;
 
-	int blue = 0;
-	int red = 0;
-	int yellow = 0;
-	int green = 0;
+	public int blue = 0;
+	public int red = 0;
+	public int yellow = 0;
+	public int green = 0;
 
 	boolean blue_bed = true;
 	boolean red_bed = true;

@@ -63,7 +63,7 @@ public class Main extends JavaPlugin implements Listener {
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
 	static Main m = null;
-	IArenaScoreboard scoreboard = new IArenaScoreboard(this);
+	public IArenaScoreboard scoreboard = new IArenaScoreboard(this);
 	ICommandHandler cmdhandler = new ICommandHandler();
 
 	public MainGUI maingui;
