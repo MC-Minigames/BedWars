@@ -24,6 +24,8 @@ import org.bukkit.event.block.BlockMultiPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -269,6 +271,17 @@ public class Main extends JavaPlugin implements Listener {
 				event.setCancelled(true);
 			}
 		}
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		Player p = (Player) event.getWhoClicked();
+		if (pli.global_players.containsKey(p.getName())) {
+			if (event.getSlotType() == SlotType.RESULT) {
+				event.setCancelled(true);
+			}
+		}
+
 	}
 
 	@EventHandler
