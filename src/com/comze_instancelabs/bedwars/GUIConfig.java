@@ -75,6 +75,7 @@ public class GUIConfig {
 		this.getConfig().addDefault("specialsgui.trades.trade4.items", "259*1;265*7");
 		this.getConfig().addDefault("specialsgui.trades.trade5.items", "46*1;266*3");
 		this.getConfig().addDefault("specialsgui.trades.trade6.items", "368*1;266*13");
+		this.getConfig().addDefault("specialsgui.trades.trade7.items", "383:91*1;336*64");
 
 		this.getConfig().options().copyDefaults(true);
 		this.saveConfig();

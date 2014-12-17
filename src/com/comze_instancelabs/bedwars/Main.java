@@ -39,6 +39,13 @@ import org.bukkit.util.Vector;
 
 import com.comze_instancelabs.bedwars.gui.MainGUI;
 import com.comze_instancelabs.bedwars.gui.TeamSelectorGUI;
+import com.comze_instancelabs.bedwars.sheep.Register;
+import com.comze_instancelabs.bedwars.sheep.Register1710;
+import com.comze_instancelabs.bedwars.sheep.Register172;
+import com.comze_instancelabs.bedwars.sheep.Register175;
+import com.comze_instancelabs.bedwars.sheep.Register178;
+import com.comze_instancelabs.bedwars.sheep.Register18;
+import com.comze_instancelabs.bedwars.sheep.Sheeep;
 import com.comze_instancelabs.bedwars.villager.Merchant;
 import com.comze_instancelabs.bedwars.villager.MerchantOffer;
 import com.comze_instancelabs.minigamesapi.Arena;
@@ -61,6 +68,8 @@ public class Main extends JavaPlugin implements Listener {
 	// Add tnt-sheep and gravi-bomb
 	// Bugs:
 	// - when doing reload items don't get cleared
+
+	Register reg;
 
 	MinigamesAPI api = null;
 	PluginInstance pli = null;
@@ -151,6 +160,19 @@ public class Main extends JavaPlugin implements Listener {
 		pli.getMessagesConfig().getConfig().addDefault("messages.bed_destroyed", "&cTeam &4<team>&c's bed was destroyed!");
 		pli.getMessagesConfig().getConfig().options().copyDefaults(true);
 		pli.getMessagesConfig().saveConfig();
+
+		if (MinigamesAPI.getAPI().version.equalsIgnoreCase("v1_7_R4")) {
+			reg = new Register1710();
+		} else if (MinigamesAPI.getAPI().version.equalsIgnoreCase("v1_7_R3")) {
+			reg = new Register178();
+		} else if (MinigamesAPI.getAPI().version.equalsIgnoreCase("v1_7_R2")) {
+			reg = new Register175();
+		} else if (MinigamesAPI.getAPI().version.equalsIgnoreCase("v1_7_R1")) {
+			reg = new Register172();
+		} else if (MinigamesAPI.getAPI().version.equalsIgnoreCase("v1_8_R1")) {
+			reg = new Register18();
+		}
+		reg.registerEntities();
 	}
 
 	public void loadTrades(FileConfiguration config, String path, Merchant m) {
@@ -189,6 +211,7 @@ public class Main extends JavaPlugin implements Listener {
 
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		boolean ret = cmdhandler.handleArgs(this, "mgbedwars", "/" + cmd.getName(), sender, args);
+
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("setupbeds")) {
 				if (args.length > 1) {
@@ -277,21 +300,66 @@ public class Main extends JavaPlugin implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		Player p = (Player) event.getWhoClicked();
 		if (pli.global_players.containsKey(p.getName())) {
-			if (event.getSlotType() == SlotType.RESULT) {
-				event.setCancelled(true);
+			if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) {
+				if (event.getSlotType() == SlotType.RESULT) {
+					event.setCancelled(true);
+				}
 			}
 		}
 
 	}
 
 	@EventHandler
-	public void onInteract(PlayerInteractEvent event) {
+	public void onInteract(final PlayerInteractEvent event) {
 		if (event.hasItem()) {
-			if (event.getItem().getType() == Material.WOOL) {
-				if (pli.global_players.containsKey(event.getPlayer().getName())) {
-					Arena a = pli.global_players.get(event.getPlayer().getName());
+			if (pli.global_players.containsKey(event.getPlayer().getName())) {
+				Arena a = pli.global_players.get(event.getPlayer().getName());
+				if (event.getItem().getType() == Material.WOOL) {
 					if (a.getArenaState() != ArenaState.INGAME && !a.isArcadeMain() && !a.getIngameCountdownStarted()) {
 						teamgui.openGUI(event.getPlayer().getName());
+					}
+				} else if (event.getItem().getType() == Material.MONSTER_EGG) {
+					if (event.hasBlock()) {
+						if (pteam.containsKey(event.getPlayer().getName())) {
+							String team = pteam.get(event.getPlayer().getName());
+							Location l = event.getPlayer().getLocation();
+							Player target = null;
+							int temp_dist = 0;
+							for (String p_ : a.getAllPlayers()) {
+								if (Validator.isPlayerOnline(p_)) {
+									Player p = Bukkit.getPlayer(p_);
+									if (pteam.containsKey(p.getName()) && pli.global_players.containsKey(p.getName())) {
+										if (!pteam.get(p.getName()).equalsIgnoreCase(team)) {
+											int dist = (int) p.getLocation().distance(l);
+											if (dist >= temp_dist) {
+												temp_dist = dist;
+												target = p;
+											}
+											break;
+										}
+									}
+								}
+							}
+							if (target != null) {
+								System.out.println("# Spawned sheeep for target " + target.getName());
+								final Sheeep s = reg.spawnSheep(this, event.getClickedBlock().getLocation().add(0D, 1D, 0D), target, colorCodeFromTeam(team));
+								final ItemStack item = event.getPlayer().getItemInHand();
+								l.getBlock().getChunk().load();
+								Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+									public void run() {
+										event.getPlayer().getInventory().remove(item);
+										event.getPlayer().updateInventory();
+									}
+								}, 5L);
+								Bukkit.getScheduler().runTaskLater(this, new Runnable() {
+									public void run() {
+										Location l = s.getLocation();
+										l.getWorld().createExplosion(l.getX(), l.getY(), l.getZ(), 2.5F, true, false);
+									}
+								}, 20L * 7);
+							}
+						}
+						event.setCancelled(true);
 					}
 				}
 			}
@@ -575,6 +643,20 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}, 10L);
 		}
+	}
+
+	public int colorCodeFromTeam(String team) {
+		int ret = 0;
+		if (team.equalsIgnoreCase("red")) {
+			ret = 14;
+		} else if (team.equalsIgnoreCase("blue")) {
+			ret = 11;
+		} else if (team.equalsIgnoreCase("yellow")) {
+			ret = 4;
+		} else if (team.equalsIgnoreCase("green")) {
+			ret = 13;
+		}
+		return ret;
 	}
 
 }
