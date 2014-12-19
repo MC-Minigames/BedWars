@@ -12,6 +12,7 @@ import com.comze_instancelabs.bedwars.IArena;
 import com.comze_instancelabs.bedwars.Main;
 import com.comze_instancelabs.minigamesapi.PluginInstance;
 import com.comze_instancelabs.minigamesapi.util.IconMenu;
+import com.comze_instancelabs.minigamesapi.util.Util;
 
 public class TeamSelectorGUI {
 
@@ -38,13 +39,17 @@ public class TeamSelectorGUI {
 								String d = event.getName();
 								Player p = event.getPlayer();
 								IArena a = (IArena) pli.global_players.get(playername);
-								if(plugin.pteam.containsKey(p.getName())){
-									updateTeamCount(playername, a, -1);
+								if (Util.isComponentForArenaValid(plugin, a.getInternalName(), "spawns.spawn" + ChatColor.stripColor(d.toLowerCase()))) {
+									if (plugin.pteam.containsKey(p.getName())) {
+										updateTeamCount(playername, a, -1);
+									}
+									plugin.pteam.put(p.getName(), ChatColor.stripColor(d.toLowerCase()));
+									updateTeamCount(playername, a, +1);
+									p.sendMessage(ChatColor.GREEN + "Successfully set team: " + d);
+									plugin.scoreboard.updateScoreboard(a);
+								} else {
+									p.sendMessage(ChatColor.RED + "That team is not enabled on this map: " + d);
 								}
-								plugin.pteam.put(p.getName(), ChatColor.stripColor(d.toLowerCase()));
-								updateTeamCount(playername, a, +1);
-								p.sendMessage(ChatColor.GREEN + "Successfully set team: " + d);
-								plugin.scoreboard.updateScoreboard(a);
 							}
 						}
 					}
@@ -62,8 +67,8 @@ public class TeamSelectorGUI {
 		iconm.open(Bukkit.getPlayerExact(playername));
 		lasticonm.put(playername, iconm);
 	}
-	
-	public void updateTeamCount(String playername, IArena a, int c){
+
+	public void updateTeamCount(String playername, IArena a, int c) {
 		String team = plugin.pteam.get(playername);
 		if (team.equalsIgnoreCase("red")) {
 			a.red += c;

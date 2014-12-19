@@ -63,7 +63,7 @@ public class IArena extends Arena {
 					}
 				}
 			}
-		}, 30L);
+		}, 25L);
 		super.joinPlayerLobby(playername);
 		selectTeam(playername);
 
