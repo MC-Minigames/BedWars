@@ -69,18 +69,35 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 		this.o = recipes;
 	}
 
-	public void openTrading(Object player, String title) { // player Class = EntityPlayer
+        public void openTrading(Object player, String title) { // player Class = EntityPlayer
 		this.c = player;
-
 		try {
-			Class clazz = ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".EntityPlayer");
-			Method m = clazz.getDeclaredMethod("openTrade", ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".IMerchant"), String.class);
-			m.setAccessible(true);
-			m.invoke(player, this.proxy, title);
+			Class classs = ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".EntityPlayer");
+			Method m;
+			if(this.getMethodArgs(classs, "openTrade") == 2) {
+				// Older than Spigot 1.8
+				m = classs.getDeclaredMethod("openTrade", ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".IMerchant"), String.class);
+				m.setAccessible(true);
+				m.invoke(player, this.proxy, title);
+			} else {
+				// Spigot 1.8 and newer
+				m = classs.getDeclaredMethod("openTrade", ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".IMerchant"));
+				m.setAccessible(true);
+				m.invoke(player, this.proxy);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// this.c.openTrade(this, title);
 	}
+	
+	private int getMethodArgs(Class classs, String methodName) {
+		    for(Method method : classs.getDeclaredMethods()) {
+		    	if(method.getName().equals(methodName)) {
+		    		return method.getParameterTypes().length;
+		    	}
+		    }
+		    return -1;
+    }
+
 
 }
