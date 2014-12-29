@@ -69,7 +69,7 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 		this.o = recipes;
 	}
 
-        public void openTrading(Object player, String title) { // player Class = EntityPlayer
+	public void openTrading(Object player, String title) { // player Class = EntityPlayer
 		this.c = player;
 		try {
 			Class classs = ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".EntityPlayer");
@@ -97,7 +97,7 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 		    	}
 		    }
 		    return -1;
-    }
+        }
 
 
 }
