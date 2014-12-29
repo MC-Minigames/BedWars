@@ -20,7 +20,7 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 			Class entityHuman = ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".EntityHuman");
 			if (m.getName().equals("a_") && args.length == 1 && args[0] != null && args[0].getClass().isInstance(entityHuman))
 				this.a_(args[0]);
-			else if (m.getName().equals("b") || m.getName().equals("m_")) // m_ = 1.6.4, b = 1.7.4
+			else if (m.getName().equals("b") || m.getName().equals("m_") || m.getName().equals("u_")) // m_ = 1.6.4, b = 1.7.x, u_ = 1.8.x
 				return this.b();
 			else if (m.getName().equals("getOffers") && args.length == 1)
 				return this.getOffers(args[0]);
@@ -74,7 +74,7 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 		try {
 			Class classs = ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".EntityPlayer");
 			Method m;
-			if(this.getMethodArgs(classs, "openTrade") == 2) {
+			if (this.getMethodArgs(classs, "openTrade") == 2) {
 				// Older than Spigot 1.8
 				m = classs.getDeclaredMethod("openTrade", ReflectionUtils.getClassByName(ReflectionUtils.getNMSPackageName() + ".IMerchant"), String.class);
 				m.setAccessible(true);
@@ -89,15 +89,14 @@ public class NMSMerchant implements java.lang.reflect.InvocationHandler {
 			e.printStackTrace();
 		}
 	}
-	
-	private int getMethodArgs(Class classs, String methodName) {
-		    for(Method method : classs.getDeclaredMethods()) {
-		    	if(method.getName().equals(methodName)) {
-		    		return method.getParameterTypes().length;
-		    	}
-		    }
-		    return -1;
-        }
 
+	private int getMethodArgs(Class classs, String methodName) {
+		for (Method method : classs.getDeclaredMethods()) {
+			if (method.getName().equals(methodName)) {
+				return method.getParameterTypes().length;
+			}
+		}
+		return -1;
+	}
 
 }
