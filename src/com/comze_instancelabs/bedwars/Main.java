@@ -420,7 +420,7 @@ public class Main extends JavaPlugin implements Listener {
 		if (pli.global_players.containsKey(p.getName())) {
 			IArena a = (IArena) pli.global_players.get(p.getName());
 			if (a.getArenaState() == ArenaState.INGAME) {
-                event.setDeathMessage(null);
+				event.setDeathMessage(null);
 				p.setHealth(20D);
 				event.getDrops().clear();
 				if (m.pteam.containsKey(p.getName())) {
@@ -462,7 +462,7 @@ public class Main extends JavaPlugin implements Listener {
 				}
 			}
 		}
-    }
+	}
 
 	@EventHandler
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
