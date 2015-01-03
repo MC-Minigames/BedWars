@@ -416,48 +416,47 @@ public class Main extends JavaPlugin implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		if (event.getEntity() instanceof Player) {
-			Player p = (Player) event.getEntity();
-			if (pli.global_players.containsKey(p.getName())) {
-				IArena a = (IArena) pli.global_players.get(p.getName());
-				if (a.getArenaState() == ArenaState.INGAME) {
-					p.setHealth(20D);
-					event.getDrops().clear();
-					if (m.pteam.containsKey(p.getName())) {
-						String team = m.pteam.get(p.getName());
-						String playername = p.getName();
-						if (team.equalsIgnoreCase("red")) {
-							if (a.red_bed) {
-								a.onEliminated(playername);
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
-							} else {
-								a.spectate(p.getName(), true);
-								a.red--;
-							}
-						} else if (team.equalsIgnoreCase("blue")) {
-							if (a.blue_bed) {
-								a.onEliminated(playername);
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
-							} else {
-								a.spectate(p.getName(), true);
-								a.blue--;
-							}
-						} else if (team.equalsIgnoreCase("green")) {
-							if (a.green_bed) {
-								a.onEliminated(playername);
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
-							} else {
-								a.spectate(p.getName(), true);
-								a.green--;
-							}
-						} else if (team.equalsIgnoreCase("yellow")) {
-							if (a.yellow_bed) {
-								a.onEliminated(playername);
-								Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
-							} else {
-								a.spectate(p.getName(), true);
-								a.yellow--;
-							}
+		Player p = event.getEntity();
+		if (pli.global_players.containsKey(p.getName())) {
+			IArena a = (IArena) pli.global_players.get(p.getName());
+			if (a.getArenaState() == ArenaState.INGAME) {
+				event.setDeathMessage(null);
+				p.setHealth(20D);
+				event.getDrops().clear();
+				if (m.pteam.containsKey(p.getName())) {
+					String team = m.pteam.get(p.getName());
+					String playername = p.getName();
+					if (team.equalsIgnoreCase("red")) {
+						if (a.red_bed) {
+							a.onEliminated(playername);
+							Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
+						} else {
+							a.spectate(p.getName(), true);
+							a.red--;
+						}
+					} else if (team.equalsIgnoreCase("blue")) {
+						if (a.blue_bed) {
+							a.onEliminated(playername);
+							Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
+						} else {
+							a.spectate(p.getName(), true);
+							a.blue--;
+						}
+					} else if (team.equalsIgnoreCase("green")) {
+						if (a.green_bed) {
+							a.onEliminated(playername);
+							Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
+						} else {
+							a.spectate(p.getName(), true);
+							a.green--;
+						}
+					} else if (team.equalsIgnoreCase("yellow")) {
+						if (a.yellow_bed) {
+							a.onEliminated(playername);
+							Util.teleportPlayerFixed(p, Util.getComponentForArena(m, a.getName(), "spawns.spawn" + m.pteam.get(playername)));
+						} else {
+							a.spectate(p.getName(), true);
+							a.yellow--;
 						}
 					}
 				}
