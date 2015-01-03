@@ -459,8 +459,25 @@ public class Main extends JavaPlugin implements Listener {
 							a.yellow--;
 						}
 					}
+					teamCheck(a);
 				}
 			}
+		}
+	}
+
+	public void teamCheck(IArena a) {
+		// If only one team left, stop
+		if (a.blue < 1 && a.red < 1 && a.yellow < 1 && a.green > 0) {
+			a.stop();
+		}
+		if (a.blue < 1 && a.red < 1 && a.yellow > 0 && a.green < 1) {
+			a.stop();
+		}
+		if (a.blue < 1 && a.red > 0 && a.yellow < 1 && a.green < 1) {
+			a.stop();
+		}
+		if (a.blue > 0 && a.red < 1 && a.yellow < 1 && a.green < 1) {
+			a.stop();
 		}
 	}
 
