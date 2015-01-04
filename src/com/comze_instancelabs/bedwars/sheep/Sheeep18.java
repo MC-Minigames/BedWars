@@ -38,7 +38,7 @@ public class Sheeep18 extends EntitySheep implements Sheeep {
 		this.setGoalTarget((EntityLiving) target, EntityTargetEvent.TargetReason.OWNER_ATTACKED_TARGET, false);
 		((Sheep) this.getBukkitEntity()).setTarget((LivingEntity) target.getBukkitEntity());
 	}
-	
+
 	public Location getLocation() {
 		return new Location(this.world.getWorld(), this.locX, this.locY, this.locZ);
 	}

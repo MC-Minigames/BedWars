@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -243,7 +244,7 @@ public class Main extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onPlaceBed(BlockPlaceEvent event) {
+	public void onPlace(BlockPlaceEvent event) {
 		if (event.getBlock().getType() == Material.BED_BLOCK) {
 			if (event.getItemInHand().hasItemMeta()) {
 				if (event.getItemInHand().getItemMeta().hasDisplayName()) {
@@ -270,6 +271,10 @@ public class Main extends JavaPlugin implements Listener {
 						}
 					}
 				}
+			}
+		} else if (event.getBlock().getType() == Material.WOOL) {
+			if (pli.global_players.containsKey(event.getPlayer().getName())) {
+				event.setCancelled(true);
 			}
 		}
 	}
